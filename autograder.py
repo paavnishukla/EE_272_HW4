@@ -17,10 +17,23 @@ def test_rtl_test():
 
     run = 0
     passed = 0
-    for layer in args.layers:
+    i = 0
+    while i < len(args.layers):
+        layer = args.layers[i]
         print("Running rtl_test with layer params:", layer)
 
-        process = subprocess.run(['make', 'clean'], 
+        if (no_build):
+            process = subprocess.run(['make', 'clean_test'], 
+                         stdout=subprocess.PIPE if not verbose else None,
+                         stderr=subprocess.PIPE if not verbose else None)
+        else:
+        # when running multiple layers, only build once
+            if (i == 0):
+                process = subprocess.run(['make', 'clean'], 
+                            stdout=subprocess.PIPE if not verbose else None,
+                            stderr=subprocess.PIPE if not verbose else None)
+            else:
+                process = subprocess.run(['make', 'clean_test'], 
                          stdout=subprocess.PIPE if not verbose else None,
                          stderr=subprocess.PIPE if not verbose else None)
 
@@ -75,6 +88,7 @@ const int STRIDE = {data["STRIDE"]};
                 run += 1
                 passed += 0
     
+        i += 1
     return run, passed
 
 
@@ -141,11 +155,13 @@ parser.add_argument('tests', type=str, nargs='*', default=['all'],
 parser.add_argument("-l", "--layers", type=str, nargs='*', help='Layer specification files to run', default=["./layers/small_layer1.json"])
 parser.add_argument("--list", action="store_true", help='List all tests')
 parser.add_argument("-v", "--verbose", action="store_true", help='Verbose option for printing test output')
+parser.add_argument("-n", "--no_build", action="store_true", help='Option for not rebuilding when running RTL tests')
 
 args = parser.parse_args()
 
 
 verbose = args.verbose
+no_build = args.no_build
 
 all_tests = [obj for name,obj in inspect.getmembers(sys.modules[__name__]) 
                         if (inspect.isfunction(obj) and 
