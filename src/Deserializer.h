@@ -32,7 +32,9 @@ public:
 void CCS_BLOCK(run)(ac_channel<uint_16> &inputChannel,
                     ac_channel<Params> &outputChannel1,
                     ac_channel<Params> &outputChannel2,
-                    ac_channel<Params> &outputChannel3)
+                    ac_channel<Params> &outputChannel3,
+                    ac_channel<Params> &outputChannel4
+                    )
     {
         Params params;
         
@@ -49,6 +51,9 @@ void CCS_BLOCK(run)(ac_channel<uint_16> &inputChannel,
         outputChannel1.write(params);
         outputChannel2.write(params);
         outputChannel3.write(params);
+        for (int i = 0; i < params.OX1 * params.OY1 * params.OC1; i++) {
+            outputChannel4.write(params);
+        }
     }
 
 };

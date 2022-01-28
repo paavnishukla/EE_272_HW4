@@ -30,18 +30,19 @@ public:
                         ac_channel<ODTYPE> &output_serial,
                         ac_channel<uint_16> &paramsIn)
     {
-        paramsDeserializer.run(paramsIn, inputDoubleBufferParams, weightDoubleBufferParams, systolicArrayParams);
+        paramsDeserializer.run(paramsIn, inputDoubleBufferParams, weightDoubleBufferParams, systolicArrayParams, outputSerializerParams);
 
         inputDoubleBuffer.run(input_serial, input_out, inputDoubleBufferParams);
         weightDoubleBuffer.run(weight_serial, weight_out, weightDoubleBufferParams);
         systolicArray.run(input_out, weight_out, output, systolicArrayParams);
 
-        outputSerializer.run(output, output_serial);   
+        outputSerializer.run(output, output_serial, outputSerializerParams);   
     }
 
 private:
     ParamsDeserializer paramsDeserializer;
     Serializer<PackedInt<OUTPUT_PRECISION, ARRAY_DIMENSION>, ODTYPE, ARRAY_DIMENSION, ACCUMULATION_BUFFER_SIZE> outputSerializer;
+    ac_channel<Params> outputSerializerParams;
 
     InputDoubleBuffer<INPUT_BUFFER_SIZE, ARRAY_DIMENSION, ARRAY_DIMENSION> inputDoubleBuffer;
     ac_channel<Params> inputDoubleBufferParams;
