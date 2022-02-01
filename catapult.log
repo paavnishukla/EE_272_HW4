@@ -1,0 +1,136 @@
+//  Catapult Ultra Synthesis 10.4b/841621 (Production Release) Thu Oct 24 17:20:07 PDT 2019
+//  
+//  Copyright (c) Mentor Graphics Corporation, 1996-2019, All Rights Reserved.
+//                        UNPUBLISHED, LICENSED SOFTWARE.
+//             CONFIDENTIAL AND PROPRIETARY INFORMATION WHICH IS THE
+//                 PROPERTY OF MENTOR GRAPHICS OR ITS LICENSORS
+//  
+//  Running on Linux paavni@rice-503-20-north 5.11.0-41-generic x86_64 aol
+//  
+//  Package information: SIFLIBS v23.4_2.0, HLS_PKGS v23.4_2.0, 
+//                       SIF_TOOLKITS v23.4_2.0, SIF_XILINX v23.4_2.0, 
+//                       SIF_ALTERA v23.4_2.0, CCS_LIBS v23.4_2.0, 
+//                       CDS_PPRO v10.3a_3, CDS_DesigChecker v10.4b, 
+//                       CDS_OASYS v19.1_2.4, CDS_PSR v19.1_1.16, 
+//                       DesignPad v2.78_1.0
+//  
+//  Start time Tue Feb  1 11:41:40 2022
+# -------------------------------------------------
+# Logging session transcript to file "/tmp/log1848912f030a270.0"
+dofile ./scripts/run_c_test.tcl
+# > if {[file isdirectory test]} { 
+# >     project load test
+# > } else {
+# >     project new -name test
+# >     project save
+# > }
+# Moving session transcript to file "/home/users/paavni/ee272/Project_part4/EE_272_HW4/catapult.log"
+# > options set Input/TargetPlatform x86_64
+# x86_64
+# > options set Input/SearchPath ./src
+# ./src
+# > options set Output/OutputVHDL false
+# false
+# > options set Architectural/DefaultRegisterThreshold 4096
+# 4096
+# > flow package require /SCVerify
+# 10.4
+# > flow package option set /SCVerify/USE_CCS_BLOCK true
+# true
+# > flow package option set /SCVerify/USE_NCSIM true
+# true
+# > flow package option set /SCVerify/USE_VCS false
+# false
+# > flow package option set /SCVerify/USE_MSIM false
+# false
+# > flow package require /NCSim
+# 8.2
+# > solution options set Flows/NCSim/NC_ROOT /cad/cadence/INCISIVE15.20.022/
+# /cad/cadence/INCISIVE15.20.022/
+# > set clk_period 5.0
+# 5.0
+# > set clocks "clk \"-CLOCK_PERIOD $clk_period -CLOCK_EDGE rising -CLOCK_HIGH_TIME [expr $clk_period/2] -CLOCK_OFFSET 0.000000 -CLOCK_UNCERTAINTY 0.0 -RESET_KIND async -RESET_SYNC_NAME rst -RESET_SYNC_ACTIVE high -RESET_ASYNC_NAME arst_n -RESET_ASYNC_ACTIVE low -ENABLE_NAME {} -ENABLE_ACTIVE high\" "
+# clk "-CLOCK_PERIOD 5.0 -CLOCK_EDGE rising -CLOCK_HIGH_TIME 2.5 -CLOCK_OFFSET 0.000000 -CLOCK_UNCERTAINTY 0.0 -RESET_KIND async -RESET_SYNC_NAME rst -RESET_SYNC_ACTIVE high -RESET_ASYNC_NAME arst_n -RESET_ASYNC_ACTIVE low -ENABLE_NAME {} -ENABLE_ACTIVE high" 
+# > go new
+# > solution file add ./src/Conv.cpp
+# /INPUTFILES/1
+# > solution file add ./src/ConvTb.cpp -exclude true
+# /INPUTFILES/2
+# > go analyze
+# Info: Starting transformation 'analyze' on solution 'solution.v1' (SOL-8)
+# Front End called with arguments: -I./src -- /home/users/paavni/ee272/Project_part4/EE_272_HW4/src/Conv.cpp (CIN-69)
+# Edison Design Group C++/C Front End - Version 5.0 (CIN-1)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(194): expected a ";" (CRD-65)
+# Warning: $PROJECT_HOME/src/SystolicArrayCore.h(212): parsing restarts here after previous syntax error (CRD-12)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(223): identifier "OC0" is undefined (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(224): expected a declaration (CRD-169)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(107): identifier "input_fifo_0" is undefined (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(107):           detected during: (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(107):             instantiation of "void SystolicArrayCore<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &, ac_channel<LoopIndices> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 63 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/SystolicArray.h" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(107):             instantiation of "void SystolicArrayWrapper<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 37 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/Conv.cpp" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(107): identifier "input_fifo_1" is undefined (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(107):           detected during: (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(107):             instantiation of "void SystolicArrayCore<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &, ac_channel<LoopIndices> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 63 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/SystolicArray.h" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(107):             instantiation of "void SystolicArrayWrapper<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 37 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/Conv.cpp" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(107): identifier "input_fifo_2" is undefined (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(107):           detected during: (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(107):             instantiation of "void SystolicArrayCore<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &, ac_channel<LoopIndices> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 63 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/SystolicArray.h" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(107):             instantiation of "void SystolicArrayWrapper<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 37 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/Conv.cpp" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(107): identifier "input_fifo_3" is undefined (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(107):           detected during: (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(107):             instantiation of "void SystolicArrayCore<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &, ac_channel<LoopIndices> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 63 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/SystolicArray.h" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(107):             instantiation of "void SystolicArrayWrapper<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 37 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/Conv.cpp" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(140): identifier "psum_fifo_0" is undefined (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(140):           detected during: (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(140):             instantiation of "void SystolicArrayCore<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &, ac_channel<LoopIndices> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 63 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/SystolicArray.h" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(140):             instantiation of "void SystolicArrayWrapper<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 37 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/Conv.cpp" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(140): identifier "psum_fifo_1" is undefined (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(140):           detected during: (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(140):             instantiation of "void SystolicArrayCore<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &, ac_channel<LoopIndices> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 63 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/SystolicArray.h" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(140):             instantiation of "void SystolicArrayWrapper<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 37 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/Conv.cpp" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(140): identifier "psum_fifo_2" is undefined (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(140):           detected during: (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(140):             instantiation of "void SystolicArrayCore<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &, ac_channel<LoopIndices> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 63 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/SystolicArray.h" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(140):             instantiation of "void SystolicArrayWrapper<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 37 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/Conv.cpp" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(140): identifier "psum_fifo_3" is undefined (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(140):           detected during: (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(140):             instantiation of "void SystolicArrayCore<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &, ac_channel<LoopIndices> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 63 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/SystolicArray.h" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(140):             instantiation of "void SystolicArrayWrapper<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 37 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/Conv.cpp" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170): identifier "accum_fifo_0" is undefined (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170):           detected during: (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170):             instantiation of "void SystolicArrayCore<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &, ac_channel<LoopIndices> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 63 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/SystolicArray.h" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170):             instantiation of "void SystolicArrayWrapper<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 37 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/Conv.cpp" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170): identifier "psum_reg" is undefined (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170):           detected during: (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170):             instantiation of "void SystolicArrayCore<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &, ac_channel<LoopIndices> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 63 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/SystolicArray.h" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170):             instantiation of "void SystolicArrayWrapper<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 37 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/Conv.cpp" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170): identifier "accum_fifo_1" is undefined (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170):           detected during: (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170):             instantiation of "void SystolicArrayCore<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &, ac_channel<LoopIndices> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 63 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/SystolicArray.h" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170):             instantiation of "void SystolicArrayWrapper<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 37 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/Conv.cpp" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170): identifier "accum_fifo_2" is undefined (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170):           detected during: (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170):             instantiation of "void SystolicArrayCore<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &, ac_channel<LoopIndices> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 63 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/SystolicArray.h" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170):             instantiation of "void SystolicArrayWrapper<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 37 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/Conv.cpp" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170): identifier "accum_fifo_3" is undefined (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170):           detected during: (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170):             instantiation of "void SystolicArrayCore<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &, ac_channel<LoopIndices> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 63 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/SystolicArray.h" (CRD-20)
+# Error: $PROJECT_HOME/src/SystolicArrayCore.h(170):             instantiation of "void SystolicArrayWrapper<IDTYPE, WDTYPE, ODTYPE, OC0, IC0>::run(ac_channel<PackedInt<8UL, IC0>> &, ac_channel<PackedInt<8UL, OC0>> &, ac_channel<PackedInt<32UL, OC0>> &, ac_channel<Params> &) [with IDTYPE=IDTYPE, WDTYPE=WDTYPE, ODTYPE=ODTYPE, OC0=4, IC0=4]" at line 37 of "/home/users/paavni/ee272/Project_part4/EE_272_HW4/src/Conv.cpp" (CRD-20)
+# $PROJECT_HOME/src/Conv.cpp(23): Pragma 'hls_design<top>' detected on class 'Conv' (CIN-6)
+# solution design add Serializer<PackedInt<32UL, 4UL>, ODTYPE, 4, 196> -type block -unlocked (HC-1)
+# solution design add SystolicArrayWrapper<IDTYPE, WDTYPE, ODTYPE, 4, 4> -type block -unlocked (HC-1)
+# solution design add SystolicArrayLooper -type block -unlocked (HC-1)
+# solution design add SystolicArrayCore<IDTYPE, WDTYPE, ODTYPE, 4, 4> -type block -unlocked (HC-1)
+# solution design add WeightDoubleBuffer<8192, 4, 4> -type block -unlocked (HC-1)
+# solution design add WeightDoubleBufferReader<8192, 4, 4> -type block -unlocked (HC-1)
+# solution design add WeightDoubleBufferWriter<8192, 4, 4> -type block -unlocked (HC-1)
+# solution design add InputDoubleBuffer<4096, 4, 4> -type block -unlocked (HC-1)
+# solution design add InputDoubleBufferReader<4096, 4, 4> -type block -unlocked (HC-1)
+# solution design add InputDoubleBufferWriter<4096, 4, 4> -type block -unlocked (HC-1)
+# solution design add ParamsDeserializer -type block -unlocked (HC-1)
+# solution design add Conv -type top -unlocked (HC-1)
+# Error: Compilation aborted (CIN-5)
+# Info: Completed transformation 'new' on solution 'solution.v1': elapsed time 1.85 seconds, memory usage 878192kB, peak memory usage 878192kB (SOL-9)
+# > end dofile ./scripts/run_c_test.tcl
+# Error: go analyze: Failed analyze
+// Finish time Tue Feb  1 11:41:49 2022, time elapsed 0:09, peak memory 857.61MB, exit status 2

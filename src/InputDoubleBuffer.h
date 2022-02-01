@@ -1,6 +1,7 @@
 #ifndef INPUT_DOUBLE_BUFFER_H
 #define INPUT_DOUBLE_BUFFER_H
-
+#include <stdio.h>
+#include <stdlib.h>
 
 template <int size, int IC0, int OC0>
 class InputDoubleBufferWriter{
@@ -14,7 +15,31 @@ public:
     {
         // -------------------------------
         // Your code starts here
-
+        //first read the paramsIn
+        Params params = paramsIn.read();
+        printf("Am here\n");
+        ac_int<32, false> tilesize = (params.IC1)*((params.OX0)*(params.STRIDE) + (params.FX))*((params.OY0)*(params.STRIDE) + (params.FY));
+        chanStruct<PackedInt<INPUT_PRECISION,IC0>,size> tmp;
+        for (int j = 0;j < (int)tilesize ;j++){
+            //tmp.data[j] = 0;
+            //tmp.data[j] = din.read() ;
+            PackedInt<INPUT_PRECISION,4> entry ;
+            for(int i = 0;i < IC0/4; i++){
+                tmp.data[j] =  din.read() ;
+                //for(int k = 0;k < 4;k++){
+                //entry.value.set_slc(i,4*i) ;//= din.read(k);
+                //entry.value[i] =  din.read() ;//+ din.read() + din.read() + din.read();
+                printf("Hello");
+           // }
+         }
+                      // tmp.data[j] = entry;
+ 
+        }
+            dout.write(tmp);
+            
+        
+        //read din, since its 4 bits at a time, I dont know why?, then dout it IC0 bits at the time 
+        //Do this for all the input values.
         // Your code ends here
         // -------------------------------
     }
@@ -32,7 +57,18 @@ public:
     {
         // -------------------------------
         // Your code starts here
+        Params params = paramsIn.read();
 
+        //ac_channel<chanStruct<PackedInt<INPUT_PRECISION, IC0>,size> > tmp;
+        ac_int<32, false> tilesize = (params.IC1)*((params.OX0)*(params.STRIDE) + (params.FX))*((params.OY0)*(params.STRIDE) + (params.FY));
+        chanStruct<PackedInt<INPUT_PRECISION, IC0>,size> tmp;
+        tmp = din.read();
+        for(int i = (int)tilesize-1;i >= 0;i--){
+            dout.write(tmp.data[i]);
+         }
+
+        //tmp = din.read();
+        //for(int i = 0;i <)
         // Your code ends here
         // -------------------------------
     }
