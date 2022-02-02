@@ -18,7 +18,8 @@ public:
         //first read the paramsIn
         Params params = paramsIn.read();
         printf("Am here\n");
-        ac_int<32, false> tilesize = (params.IC1)*((params.OX0)*(params.STRIDE) + (params.FX))*((params.OY0)*(params.STRIDE) + (params.FY));
+        for(int k = 0;k < params.OC1*params.OX1*params.OY1;k++) {
+        ac_int<32, false> tilesize = (params.IC1)*((params.OX0-1)*(params.STRIDE) + (params.FX))*((params.OY0-1)*(params.STRIDE) + (params.FY));
         chanStruct<PackedInt<INPUT_PRECISION,IC0>,size> tmp;
 
         for (int j = 0;j < (int)tilesize ;j++){
@@ -30,11 +31,13 @@ public:
                     entry.value[i*IC0/4 + k] = din.read().value[k];
                     printf("Hello");
                 }
-            }
+            } 
+        
             tmp.data[j] = entry;
- 
+            }
+             dout.write(tmp);
+
         }
-            dout.write(tmp);
             
         
         //read din, since its 4 bits at a time, I dont know why?, then dout it IC0 bits at the time 

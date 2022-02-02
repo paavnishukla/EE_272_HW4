@@ -69,10 +69,9 @@ public:
             //for (int i = 0; i < 2*ARRAY_DIMENSION - 1 ; i++) {
             int rampUpTime = ARRAY_DIMENSION;
             int flushTime = ARRAY_DIMENSION-1;
-            int numPixels = (int)(params.OC1*OC0) //not right
-            PackedInt2D<WEIGHT_PRECISION, ARRAY_DIMENSION, ARRAY_DIMENSION>weightsArray;
-            for (int i = 0; i < rampUpTime+numPixels+flushTime; i++) {
-            
+            uint_16 numPixels = (uint_16)(params.OY1*params.OX1*params.OC1*params.IC1*params.FX*params.FY) ;//not right...output tile size
+            WDTYPE weightsArray[ARRAY_DIMENSION][ARRAY_DIMENSION];            
+            for (int h = 0; h < rampUpTime+numPixels+flushTime; h++) {
             // Your code ends here 
             // You should now be in the body of the loop
             // -------------------------------
@@ -81,8 +80,16 @@ public:
                 // If you are in the ramp up time, read in weights from the channel
                 // and store it in the weights array
                 // Your code starts here
-                if(i < rampUpTime) {
-                    weightsArray.value[i] = weight.din() ;
+                 if (h < rampUpTime) {
+                    PackedInt<WEIGHT_PRECISION, OC0> temp = weight.read();
+                    for (int j = 0; j < ARRAY_DIMENSION-1; j++)
+                    {
+                        for (int k = 0; k < ARRAY_DIMENSION; k++)
+                        {
+                            weightsArray[j+1][k] = weightsArray[j][k];
+                            weightsArray[0][k] = temp.value[k];
+                        }                 
+                    }            
                 }
                 // -------------------------------
                 
@@ -93,7 +100,7 @@ public:
                 // Read inputs from the channel and store in the variable in_col
                 // Note: you don't read in any inputs during the flush time
                 // Your code starts here
-                if(i < rampUpTime + numPixels){
+                if(h < rampUpTime + numPixels){
                 in_col = input.read();
                 }
                 // Your code ends here
@@ -120,12 +127,10 @@ public:
                 // -------------------------------
                 // Assign values from input_buf into the registers for the first column of PEs
                 // Your code starts here
-                PackedInt2D<INPUT_PRECISION, IC0, ARRAY_DIMENSION > input_PE;
-
-                for(int k = 0;i < ARRAY_DIMENSION;k ++){
-                    input_PE.value[k] = input_buf.read();
-
+                 for (int j = 0; j<ARRAY_DIMENSION;j++) {
+                    inputReg1[j][0] = input_buf.value[j];
                 }
+ 
                 // Your code ends here
                 // -------------------------------
 
@@ -135,13 +140,19 @@ public:
                 // Set partial outputs for the array to psum_buf.
                 // Depending on the loop index, the partial output will be 0 or a value from the accumulation buffer
                 // Your code starts here
-
+                 for (int j = 0; j<ARRAY_DIMENSION; j++){
+                    if (h<rampUpTime) {
+                       // psum_buf.value[j] = 0;
+                    }
+                    else {
+                        //psum_buf.value[j] = accumBuf.value[j];
+                    }
+                }
                 // Your code ends here
                 // -------------------------------
                 
                 // Debug example:
                 // printf("psum_buf: %s\n", psum_buf.to_string());
-
                 /*
                  * FIFOs for partial outputs coming in to the systolic array
                  * assign values to psum_buf, and the skewed version will be in output_buf
@@ -158,10 +169,9 @@ public:
                 // -------------------------------
                 // Assign values from output_buf into the partial sum registers for the first row of PEs
                 // Your code starts here
-                PackedInt2D<OUTPUT_PRECISION, OC0, ARRAY_DIMENSION> psum_partial;
-
-                //for(int i = 0;i < ARRAY_DIMENSION;i++){
-                    psum_partial.value[0] = output_buf.read();
+                for (int j = 0; j<ARRAY_DIMENSION;j++) {
+                    psumReg1[0][j] = output_buf.value[j];
+                }
                 //}
                 // Your code ends here
                 // -------------------------------
@@ -171,9 +181,12 @@ public:
                 // Run the 16x16 PE array
                 // Make sure that the correct registers are given to the PE
                 // Your code starts here
-                for(int j = 0;j < ARRAY_DIMENSION;j++){
-                    for(int k = 0;j < ARRAY_DIMENSION;k++) {
-                        ProcessingElement.run(input_reg, psum_in, weight, input_out, psum_out)
+                //
+
+                for (int j = 0; j < ARRAY_DIMENSION; j++) {
+                    for (int k = 0; k < ARRAY_DIMENSION; k++) {
+                        PE_Array[j][k].run(inputReg1[j][k], psumReg1[j][k], weightsArray[j][k], inputReg2[j][k], psumReg2[j][k]);
+                       // psum_reg[j][k] = psumReg2[j][k];
                     }
                 }
                 // Your code ends here
@@ -184,9 +197,11 @@ public:
                  * FIFOs for partial outputs coming out of the systolic array
                  * The skewed version will be in the variable output_row
                  */
-                PackedInt<OUTPUT_PRECISION, OC0> output_row;
+               //   //
 
-                #define FIFO_WRITE_BODY_NEW(z,i,unused)\
+                PackedInt<OUTPUT_PRECISION, OC0> output_row;
+                ODTYPE psum_reg[ARRAY_DIMENSION][ARRAY_DIMENSION];
+                #define FIFO_WRITE_BODY_NEW(z,i,unused)\ 
                     ODTYPE BOOST_PP_CAT(accum_fifo_output_, i); \
                     BOOST_PP_CAT(accum_fifo_, i).run( psum_reg[IC0][i] , BOOST_PP_CAT(accum_fifo_output_, i) );\
                     output_row.value[i] = BOOST_PP_CAT(accum_fifo_output_,i); \
@@ -197,15 +212,30 @@ public:
                 // After a certain number of cycles, you will have valid output from the systolic array
                 // Depending on the loop indices, this valid output will either be written into the accumulation buffer or written out
                 // Your code starts here
-                if(int i <)
-                // Your code ends here
+                for (int j = 0;j < ARRAY_DIMENSION;j ++) {
+                if(loopindices.fx_idx[i] < params.FX-1 && loopindices.fy_idx < params.FY-1 && loopindices.ic1_idx < params.IC1-1) {
+                    accumBuf[0][j] = psumReg2;
+                } else {
+                    output.write(output_row);
+                }
+                }
+                // for (int j = 0; j < ARRAY_DIMENSION; j++) {
+                //     if (i > rampUpTime && i < rampUpTime+numberPixels) {
+                //         accumBuf[0][j] = psum_reg;
+                //     }
+                // }                // Your code ends here
                 // -------------------------------
                 
                 // -------------------------------
                 // Cycle the input/psum registers
                 // That is, the outputs that a PE wrote to should now become the input for the next PE
                 // Your code starts here
-
+                 for (int j = 0; j < ARRAY_DIMENSION; j++) {
+                    for (int k = 1; k < ARRAY_DIMENSION; k++) {
+                        inputReg1[j][k] = inputReg2[j][k-1];
+                        psumReg1[k][j] = psumReg2[k-1][j];
+                    }
+                }
                 // Your code ends here
                 // -------------------------------
             }
@@ -220,7 +250,14 @@ private:
     // -------------------------------
     // Create the following:
     //  - PE array
-    ProcessingElement(input_reg, psum_in, weight, input_out, psum_out)
+    ProcessingElement<IDTYPE,ODTYPE> PE_Array[ARRAY_DIMENSION][ARRAY_DIMENSION]; //PE[][].run()
+    IDTYPE inputReg1[ARRAY_DIMENSION][ARRAY_DIMENSION];
+    IDTYPE inputReg2[ARRAY_DIMENSION][ARRAY_DIMENSION];
+    ODTYPE psumReg1[ARRAY_DIMENSION][ARRAY_DIMENSION];
+    ODTYPE psumReg2[ARRAY_DIMENSION][ARRAY_DIMENSION];
+  //  ODTYPE psum_reg[ARRAY_DIMENSION][rampUpTime+numPixels+flushTime]; //??
+    WDTYPE weightReg[ARRAY_DIMENSION][ARRAY_DIMENSION];
+    ODTYPE accumBuf[ACCUMULATION_BUFFER_SIZE][ARRAY_DIMENSION];
     
     //  - accumulation buffer
     //  - weight registers
