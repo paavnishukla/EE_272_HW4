@@ -54,6 +54,8 @@ public:
             // -------------------------------
             // Read in the params and loop indices from the channel
             // Your code starts here
+            Params params = paramsIn.read();
+            LoopIndices loopindices = loopIndicesIn.read();
 
             // Your code ends here
             // -------------------------------
@@ -64,7 +66,13 @@ public:
             // The number of steps in a run of the systolic array is equal to:
             // the ramp-up time + number of pixels + flush time
             // Your code starts here
-
+            //for (int i = 0; i < 2*ARRAY_DIMENSION - 1 ; i++) {
+            int rampUpTime = ARRAY_DIMENSION;
+            int flushTime = ARRAY_DIMENSION-1;
+            int numPixels = (int)(params.OC1*OC0) //not right
+            PackedInt2D<WEIGHT_PRECISION, ARRAY_DIMENSION, ARRAY_DIMENSION>weightsArray;
+            for (int i = 0; i < rampUpTime+numPixels+flushTime; i++) {
+            
             // Your code ends here 
             // You should now be in the body of the loop
             // -------------------------------
@@ -73,8 +81,9 @@ public:
                 // If you are in the ramp up time, read in weights from the channel
                 // and store it in the weights array
                 // Your code starts here
-
-                // Your code ends here
+                if(i < rampUpTime) {
+                    weightsArray.value[i] = weight.din() ;
+                }
                 // -------------------------------
                 
                 
@@ -84,13 +93,15 @@ public:
                 // Read inputs from the channel and store in the variable in_col
                 // Note: you don't read in any inputs during the flush time
                 // Your code starts here
-
+                if(i < rampUpTime + numPixels){
+                in_col = input.read();
+                }
                 // Your code ends here
                 // -------------------------------
 
                 // Debug example:        
                 // printf("in_col: %s\n", in_col.to_string());
-
+ 
 
                 /*
                  * FIFOs for inputs coming in to the systolic array
@@ -109,7 +120,12 @@ public:
                 // -------------------------------
                 // Assign values from input_buf into the registers for the first column of PEs
                 // Your code starts here
+                PackedInt2D<INPUT_PRECISION, IC0, ARRAY_DIMENSION > input_PE;
 
+                for(int k = 0;i < ARRAY_DIMENSION;k ++){
+                    input_PE.value[k] = input_buf.read();
+
+                }
                 // Your code ends here
                 // -------------------------------
 
@@ -142,7 +158,11 @@ public:
                 // -------------------------------
                 // Assign values from output_buf into the partial sum registers for the first row of PEs
                 // Your code starts here
+                PackedInt2D<OUTPUT_PRECISION, OC0, ARRAY_DIMENSION> psum_partial;
 
+                //for(int i = 0;i < ARRAY_DIMENSION;i++){
+                    psum_partial.value[0] = output_buf.read();
+                //}
                 // Your code ends here
                 // -------------------------------
             
@@ -151,7 +171,11 @@ public:
                 // Run the 16x16 PE array
                 // Make sure that the correct registers are given to the PE
                 // Your code starts here
-
+                for(int j = 0;j < ARRAY_DIMENSION;j++){
+                    for(int k = 0;j < ARRAY_DIMENSION;k++) {
+                        ProcessingElement.run(input_reg, psum_in, weight, input_out, psum_out)
+                    }
+                }
                 // Your code ends here
                 // -------------------------------
                 
@@ -173,7 +197,7 @@ public:
                 // After a certain number of cycles, you will have valid output from the systolic array
                 // Depending on the loop indices, this valid output will either be written into the accumulation buffer or written out
                 // Your code starts here
-
+                if(int i <)
                 // Your code ends here
                 // -------------------------------
                 
@@ -196,6 +220,8 @@ private:
     // -------------------------------
     // Create the following:
     //  - PE array
+    ProcessingElement(input_reg, psum_in, weight, input_out, psum_out)
+    
     //  - accumulation buffer
     //  - weight registers
     //  - input registers (two sets, one at the input of the PE and one at the output) 

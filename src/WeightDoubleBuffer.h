@@ -18,17 +18,18 @@ public:
         printf("Am here\n");
         ac_int<32, false> tilesize = (params.IC1)*(IC0)*(params.FX)*(params.FY);
         chanStruct<PackedInt<WEIGHT_PRECISION,OC0>,size> tmp;
-        for (int j = 0;j < size ;j++){
+        for (int j = 0;j < tilesize ;j++){
             //tmp.data[j] = 0;
             //tmp.data[j] = din.read() ;
-           // PackedInt<WEIGHT_PRECISION,OC0> entry;
+           PackedInt<WEIGHT_PRECISION,OC0> entry;
             for(int i = 0;i < OC0/4; i++){
-                
+                for(int k = 0;k < 4;k++){
                 printf("Hello");
-                //entry.value[i] =  din.read() ;
-                tmp.data[j] = din.read();
+                entry.value[i*IC0/4 + k] =  din.read().value[k] ;
             }
-            //tmp.data[j] = entry.value[i].;
+        }
+
+        tmp.data[j] = entry;
         }
             dout.write(tmp);
             
@@ -50,9 +51,10 @@ public:
         // -------------------------------
         // Your code starts here
         Params params = paramsIn.read();
+        ac_int<32, false> tilesize = (params.IC1)*(IC0)*(params.FX)*(params.FY);
         chanStruct<PackedInt<INPUT_PRECISION, OC0>,size> tmp;
         tmp = din.read();
-        for(int i = size-1;i >= 0;i--){
+        for(int i = tilesize-1;i >= 0;i--){
             dout.write(tmp.data[i]);
          }
         // Your code ends here

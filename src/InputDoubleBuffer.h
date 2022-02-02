@@ -20,19 +20,18 @@ public:
         printf("Am here\n");
         ac_int<32, false> tilesize = (params.IC1)*((params.OX0)*(params.STRIDE) + (params.FX))*((params.OY0)*(params.STRIDE) + (params.FY));
         chanStruct<PackedInt<INPUT_PRECISION,IC0>,size> tmp;
+
         for (int j = 0;j < (int)tilesize ;j++){
             //tmp.data[j] = 0;
             //tmp.data[j] = din.read() ;
-            PackedInt<INPUT_PRECISION,4> entry ;
+            PackedInt<INPUT_PRECISION,IC0> entry ;
             for(int i = 0;i < IC0/4; i++){
-                tmp.data[j] =  din.read() ;
-                //for(int k = 0;k < 4;k++){
-                //entry.value.set_slc(i,4*i) ;//= din.read(k);
-                //entry.value[i] =  din.read() ;//+ din.read() + din.read() + din.read();
-                printf("Hello");
-           // }
-         }
-                      // tmp.data[j] = entry;
+                for(int k = 0;k < 4;k ++) {
+                    entry.value[i*IC0/4 + k] = din.read().value[k];
+                    printf("Hello");
+                }
+            }
+            tmp.data[j] = entry;
  
         }
             dout.write(tmp);
