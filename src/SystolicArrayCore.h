@@ -69,7 +69,7 @@ public:
             //for (int i = 0; i < 2*ARRAY_DIMENSION - 1 ; i++) {
             int rampUpTime = ARRAY_DIMENSION;
             int flushTime = ARRAY_DIMENSION-1;
-            uint_16 numPixels = (uint_16)(params.OY1*params.OX1*params.OC1*params.IC1*params.FX*params.FY) ;//not right...output tile size
+            int numPixels = (int)(params.OX0*params.OY0) ;//not right...output tile size
             WDTYPE weightsArray[ARRAY_DIMENSION][ARRAY_DIMENSION];            
             for (int h = 0; h < rampUpTime+numPixels+flushTime; h++) {
             // Your code ends here 
@@ -140,14 +140,13 @@ public:
                 // Set partial outputs for the array to psum_buf.
                 // Depending on the loop index, the partial output will be 0 or a value from the accumulation buffer
                 // Your code starts here
-                 for (int j = 0; j<ARRAY_DIMENSION; j++){
-                    if (h<rampUpTime) {
-                       // psum_buf.value[j] = 0;
-                    }
-                    else {
-                        //psum_buf.value[j] = accumBuf.value[j];
-                    }
+                if(loopindices.fx_idx == 0 && loopindices.fy_idx == 0 && loopindices.ic1_idx == 0){
+                    psum_buf = 0;
                 }
+                else if(loopindices.fx_idx < params.FX && loopindices.fy_idx < params.FY && loopindices.ic1 < params.IC1){
+                    psum_buf = accumBuf;
+                }
+
                 // Your code ends here
                 // -------------------------------
                 
@@ -158,11 +157,11 @@ public:
                  * assign values to psum_buf, and the skewed version will be in output_buf
                  */
                 PackedInt<OUTPUT_PRECISION, OC0> output_buf;
-                #define ACCUM_FIFO_BODY(z,i,unused) \
-                    ODTYPE BOOST_PP_CAT(psum_fifo_output_, i); \
-                    ODTYPE BOOST_PP_CAT(psum_fifo_input_, i) = psum_buf.value[i]; \
-                    BOOST_PP_CAT(psum_fifo_, i).run( BOOST_PP_CAT(psum_fifo_input_, i) , BOOST_PP_CAT(psum_fifo_output_, i) ); \
-                    output_buf.value[i] = BOOST_PP_CAT(psum_fifo_output_, i);
+                #define ACCUM_FIFO_BODY(z,h,unused) \
+                    ODTYPE BOOST_PP_CAT(psum_fifo_output_, h); \
+                    ODTYPE BOOST_PP_CAT(psum_fifo_input_, h) = psum_buf.value[h]; \
+                    BOOST_PP_CAT(psum_fifo_, h).run( BOOST_PP_CAT(psum_fifo_input_, h) , BOOST_PP_CAT(psum_fifo_output_, h) ); \
+                    output_buf.value[h] = BOOST_PP_CAT(psum_fifo_output_, h);
                 
                 REPEAT(ACCUM_FIFO_BODY)
         
@@ -170,7 +169,7 @@ public:
                 // Assign values from output_buf into the partial sum registers for the first row of PEs
                 // Your code starts here
                 for (int j = 0; j<ARRAY_DIMENSION;j++) {
-                    psumReg1[0][j] = output_buf.value[j];
+                    psum_reg[0][j] = output_buf.value[j];
                 }
                 //}
                 // Your code ends here
@@ -200,9 +199,9 @@ public:
                //   //
 
                 PackedInt<OUTPUT_PRECISION, OC0> output_row;
-                ODTYPE psum_reg[ARRAY_DIMENSION][ARRAY_DIMENSION];
+                //ODTYPE psum_reg[ARRAY_DIMENSION][ARRAY_DIMENSION];
                 #define FIFO_WRITE_BODY_NEW(z,i,unused)\ 
-                    ODTYPE BOOST_PP_CAT(accum_fifo_output_, i); \
+                    ODTYPE BOOST_PP_CAT(accum_fifo_output_, i);\
                     BOOST_PP_CAT(accum_fifo_, i).run( psum_reg[IC0][i] , BOOST_PP_CAT(accum_fifo_output_, i) );\
                     output_row.value[i] = BOOST_PP_CAT(accum_fifo_output_,i); \
                 
@@ -212,13 +211,13 @@ public:
                 // After a certain number of cycles, you will have valid output from the systolic array
                 // Depending on the loop indices, this valid output will either be written into the accumulation buffer or written out
                 // Your code starts here
-                for (int j = 0;j < ARRAY_DIMENSION;j ++) {
+                //for (int j = 0;j < ARRAY_DIMENSION;j ++) {
                 if(loopindices.fx_idx[i] < params.FX-1 && loopindices.fy_idx < params.FY-1 && loopindices.ic1_idx < params.IC1-1) {
                     accumBuf[0][j] = psumReg2;
                 } else {
                     output.write(output_row);
                 }
-                }
+                //}
                 // for (int j = 0; j < ARRAY_DIMENSION; j++) {
                 //     if (i > rampUpTime && i < rampUpTime+numberPixels) {
                 //         accumBuf[0][j] = psum_reg;
@@ -233,7 +232,7 @@ public:
                  for (int j = 0; j < ARRAY_DIMENSION; j++) {
                     for (int k = 1; k < ARRAY_DIMENSION; k++) {
                         inputReg1[j][k] = inputReg2[j][k-1];
-                        psumReg1[k][j] = psumReg2[k-1][j];
+                        psum_reg[k][j] = psumReg2[k-1][j];
                     }
                 }
                 // Your code ends here
@@ -254,7 +253,7 @@ private:
     IDTYPE inputReg1[ARRAY_DIMENSION][ARRAY_DIMENSION];
     IDTYPE inputReg2[ARRAY_DIMENSION][ARRAY_DIMENSION];
     ODTYPE psumReg1[ARRAY_DIMENSION][ARRAY_DIMENSION];
-    ODTYPE psumReg2[ARRAY_DIMENSION][ARRAY_DIMENSION];
+    ODTYPE psum_reg[ARRAY_DIMENSION][ARRAY_DIMENSION];
   //  ODTYPE psum_reg[ARRAY_DIMENSION][rampUpTime+numPixels+flushTime]; //??
     WDTYPE weightReg[ARRAY_DIMENSION][ARRAY_DIMENSION];
     ODTYPE accumBuf[ACCUMULATION_BUFFER_SIZE][ARRAY_DIMENSION];

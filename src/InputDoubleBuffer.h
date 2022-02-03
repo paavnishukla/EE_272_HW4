@@ -28,7 +28,7 @@ public:
             PackedInt<INPUT_PRECISION,IC0> entry ;
             for(int i = 0;i < IC0/4; i++){
                 for(int k = 0;k < 4;k ++) {
-                    entry.value[i*IC0/4 + k] = din.read().value[k];
+                    entry.value[i*4 + k] = din.read().value[k];
                     printf("Hello");
                 }
             } 
@@ -65,9 +65,11 @@ public:
         ac_int<32, false> tilesize = (params.IC1)*((params.OX0)*(params.STRIDE) + (params.FX))*((params.OY0)*(params.STRIDE) + (params.FY));
         chanStruct<PackedInt<INPUT_PRECISION, IC0>,size> tmp;
         tmp = din.read();
-        for(int i = (int)tilesize-1;i >= 0;i--){
+        for(int i = tilesize-1;i >= 0;i--){
+  
             dout.write(tmp.data[i]);
-         }
+        }
+        
 
         //tmp = din.read();
         //for(int i = 0;i <)
