@@ -81,6 +81,9 @@ public:
                 // and store it in the weights array
                 // Your code starts here
                  if (h < rampUpTime) {
+                         if (!weight.available(1)) {
+                            printf("Weight reader in systolic array is the error");
+                        }
                     PackedInt<WEIGHT_PRECISION, OC0> temp = weight.read();
                     for (int j = 0; j < ARRAY_DIMENSION-1; j++)
                     {
@@ -101,6 +104,9 @@ public:
                 // Note: you don't read in any inputs during the flush time
                 // Your code starts here
                 if(h < rampUpTime + numPixels){
+                        if (!input.available(1)) {
+                            printf("Input read in systolic array is the error");
+                        }
                 in_col = input.read();
                 }
                 // Your code ends here
@@ -115,6 +121,7 @@ public:
                  * assign values to in_col, and the skewed version will be in input_buf
                  */
                 PackedInt<INPUT_PRECISION, IC0> input_buf;
+
 
                 #define INPUT_FIFO_BODY(z,i,unused) \
                     IDTYPE BOOST_PP_CAT(input_fifo_output_, i); \
@@ -140,11 +147,13 @@ public:
                 // Set partial outputs for the array to psum_buf.
                 // Depending on the loop index, the partial output will be 0 or a value from the accumulation buffer
                 // Your code starts here
-                if(loopindices.fx_idx == 0 && loopindices.fy_idx == 0 && loopindices.ic1_idx == 0){
-                    psum_buf = 0;
-                }
-                else if(loopindices.fx_idx < params.FX && loopindices.fy_idx < params.FY && loopindices.ic1 < params.IC1){
-                    psum_buf = accumBuf;
+                for (int j = 0; j<ARRAY_DIMENSION; j++){
+                    if (loopindices.fx_idx == 0 && loopindices.fy_idx == 0 && loopindices.ic1_idx == 0) {
+                        psum_buf.value[j] = 0;
+                    }
+                    else {
+                        psum_buf.value[j] = accumBuf[h-(rampUpTime+flushTime)][j];
+                    }
                 }
 
                 // Your code ends here
@@ -184,7 +193,7 @@ public:
 
                 for (int j = 0; j < ARRAY_DIMENSION; j++) {
                     for (int k = 0; k < ARRAY_DIMENSION; k++) {
-                        PE_Array[j][k].run(inputReg1[j][k], psumReg1[j][k], weightsArray[j][k], inputReg2[j][k], psumReg2[j][k]);
+                        PE_Array[j][k].run(inputReg1[j][k], psum_reg[j][k], weightsArray[j][k], inputReg2[j][k], psum_reg2[j][k]);
                        // psum_reg[j][k] = psumReg2[j][k];
                     }
                 }
@@ -199,9 +208,8 @@ public:
                //   //
 
                 PackedInt<OUTPUT_PRECISION, OC0> output_row;
-                //ODTYPE psum_reg[ARRAY_DIMENSION][ARRAY_DIMENSION];
-                #define FIFO_WRITE_BODY_NEW(z,i,unused)\ 
-                    ODTYPE BOOST_PP_CAT(accum_fifo_output_, i);\
+                 #define FIFO_WRITE_BODY_NEW(z,i,unused)\
+                    ODTYPE BOOST_PP_CAT(accum_fifo_output_, i); \
                     BOOST_PP_CAT(accum_fifo_, i).run( psum_reg[IC0][i] , BOOST_PP_CAT(accum_fifo_output_, i) );\
                     output_row.value[i] = BOOST_PP_CAT(accum_fifo_output_,i); \
                 
@@ -212,11 +220,17 @@ public:
                 // Depending on the loop indices, this valid output will either be written into the accumulation buffer or written out
                 // Your code starts here
                 //for (int j = 0;j < ARRAY_DIMENSION;j ++) {
-                if(loopindices.fx_idx[i] < params.FX-1 && loopindices.fy_idx < params.FY-1 && loopindices.ic1_idx < params.IC1-1) {
-                    accumBuf[0][j] = psumReg2;
-                } else {
-                    output.write(output_row);
-                }
+                
+                
+                    if((loopindices.fx_idx == (params.FX-1)) && (loopindices.fy_idx == params.FY-1) && (loopindices.ic1_idx == params.IC1-1)) {
+                        output.write(output_row)  ;
+                    }
+                    else if (h>(rampUpTime+flushTime)) {
+                        for (int j = 0; j < ARRAY_DIMENSION; j++) {
+                        accumBuf[h-(rampUpTime+flushTime)][j] = psum_reg2[ARRAY_DIMENSION-1][j];
+                    }
+                   
+                    }
                 //}
                 // for (int j = 0; j < ARRAY_DIMENSION; j++) {
                 //     if (i > rampUpTime && i < rampUpTime+numberPixels) {
@@ -232,7 +246,7 @@ public:
                  for (int j = 0; j < ARRAY_DIMENSION; j++) {
                     for (int k = 1; k < ARRAY_DIMENSION; k++) {
                         inputReg1[j][k] = inputReg2[j][k-1];
-                        psum_reg[k][j] = psumReg2[k-1][j];
+                        psum_reg[k][j] = psum_reg2[k-1][j];
                     }
                 }
                 // Your code ends here
@@ -252,7 +266,7 @@ private:
     ProcessingElement<IDTYPE,ODTYPE> PE_Array[ARRAY_DIMENSION][ARRAY_DIMENSION]; //PE[][].run()
     IDTYPE inputReg1[ARRAY_DIMENSION][ARRAY_DIMENSION];
     IDTYPE inputReg2[ARRAY_DIMENSION][ARRAY_DIMENSION];
-    ODTYPE psumReg1[ARRAY_DIMENSION][ARRAY_DIMENSION];
+    ODTYPE psum_reg2[ARRAY_DIMENSION][ARRAY_DIMENSION];
     ODTYPE psum_reg[ARRAY_DIMENSION][ARRAY_DIMENSION];
   //  ODTYPE psum_reg[ARRAY_DIMENSION][rampUpTime+numPixels+flushTime]; //??
     WDTYPE weightReg[ARRAY_DIMENSION][ARRAY_DIMENSION];

@@ -23,7 +23,7 @@ int run_layer(Params params){
     static ac_channel<ODTYPE> output_stream;
     
     int errCnt = 0;
-    int rand_init = 1;
+    int rand_init = 0;
 
     printf("Generating Input\n");
  
@@ -58,7 +58,7 @@ int run_layer(Params params){
         }  // for c
       }  // for co
     }  // for ro
- 
+ printf("Input feeding is done\n");
 
     printf("Generating Weight\n");
 
@@ -145,7 +145,7 @@ int run_layer(Params params){
                 if((long long)output_ref[ro*params.OY0+p][co*params.OX0+i][koo*OC0+j] != (long long)out_value) {
                   errCnt++;
                   if (errCnt < 10) {
-                    printf("***ERROR***\n");
+                    printf("***ERROR***Count for output\n");
                     printf("output[%d][%d][%d] = %lld, ref = %lld\n",ro*params.OY0+p, co*params.OX0+i, koo*OC0+j, (long long)out_value, (long long)output_ref[ro*params.OY0+p][co*params.OX0+i][koo*OC0+j]);
                   }
                 }

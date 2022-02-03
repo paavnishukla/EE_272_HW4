@@ -15,24 +15,36 @@ public:
         // -------------------------------
         // Your code starts here
         Params params = paramsIn.read();
-        printf("Am here\n");
+        //printf("Am here\n");
+
         ac_int<32, false> tilesize = (params.IC1)*(IC0)*(params.FX)*(params.FY);
         chanStruct<PackedInt<WEIGHT_PRECISION,OC0>,size> tmp;
-        for (int j = 0;j < tilesize ;j++){
-            //tmp.data[j] = 0;
-            //tmp.data[j] = din.read() ;
-           PackedInt<WEIGHT_PRECISION,OC0> entry;
-            for(int i = 0;i < OC0/4; i++){
-                for(int k = 0;k < 4;k++){
-                printf("Hello");
-                entry.value[i*IC0/4 + k] =  din.read().value[k] ;
+        for(int k = 0;k < params.OY1;k++){
+            for(int l = 0;l < params.OX1;l++)
+                for(int m = 0;m < params.OC1;m++) {
+
+                    for (int j = 0;j < tilesize ;j++){
+                        //tmp.data[j] = 0;
+                        //tmp.data[j] = din.read() ;
+                        PackedInt<WEIGHT_PRECISION,OC0> entry;
+                        for(int i = 0;i < OC0/4; i++){
+                            for(int k = 0;k < 4;k++){
+                            //printf("Hello");
+                                if (!din.available(1)) {
+                                        printf("Weight double buffer writer is the error");
+                                    }
+                            entry.value[i*IC0/4 + k] =  din.read().value[k] ;
+                        }
+                    }
+
+                    tmp.data[j] = entry;
+                }
+
+                dout.write(tmp);
             }
         }
+      
 
-        tmp.data[j] = entry;
-        }
-            dout.write(tmp);
-            
         // Your code ends here
         // -------------------------------
     }
@@ -53,10 +65,20 @@ public:
         Params params = paramsIn.read();
         ac_int<32, false> tilesize = (params.IC1)*(IC0)*(params.FX)*(params.FY);
         chanStruct<PackedInt<INPUT_PRECISION, OC0>,size> tmp;
+            if (!din.available(1)) {
+                            printf("Weight double buffer reader is the error");
+                        }
         tmp = din.read();
-        for(int i = tilesize-1;i >= 0;i--){
-            dout.write(tmp.data[i]);
-         }
+        for(int k = 0;k < params.OY1;k++){
+            for(int l = 0;l < params.OX1;l++)
+                for(int m = 0;m < params.OC1;m++) {
+
+                    for(int i = 0;i < tilesize;i++){
+                        dout.write(tmp.data[i]);
+                    
+                }
+            }
+        }
         // Your code ends here
         // -------------------------------
     }
