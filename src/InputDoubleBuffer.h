@@ -23,16 +23,21 @@ public:
 
         for(int k = 0;k < params.OY1;k++) {
             for(int m = 0;m < params.OX1;m++){
-                for(int l = 0;l < params.OC1;l++){
                     for (int j = 0;j < (int)tilesize ;j++){
                         PackedInt<INPUT_PRECISION,IC0> entry ;
                         for(int i = 0;i < IC0/4; i++){
-                            for(int k = 0;k < 4;k ++) {
+                            PackedInt<INPUT_PRECISION,4> store ;
+                            if (!din.available(1)) {
+                            printf("Input double buffer  store in writer  is the error");
+                            }
+                            store = din.read();
+
+                            for(int l = 0;l < 4;l ++) {
                                 if (!din.available(1)) {
                                     printf("Input double buffer writer is the error");
                                 }
-                                entry.value[i*4 + k] = din.read().value[k];
-                                //printf("Hello");
+                                
+                                entry.value[i*4 + l] = store.value[l];
                                // printf("params FX- %d,FY- %d, IC1- %d, OC1 - %d, OX0 - %d, OX1 - %d, OY0 = %d, OY1 - %d, STRIDE- %d",params.FX,params.FY,params.IC1,params.OC1,params.OX0,params.OX1,params.OY0,params.OY1,params.STRIDE);
                             }
                         } 
@@ -41,7 +46,6 @@ public:
                     }
                 dout.write(tmp);
                 printf("size is %d",dout.size());
-                }
         
             }
                 
@@ -68,29 +72,40 @@ public:
         // -------------------------------
         // Your code starts here
         Params params = paramsIn.read();
-
+        printf("size of din is %d\n",din.size());
         //ac_channel<chanStruct<PackedInt<INPUT_PRECISION, IC0>,size> > tmp;
       //  ac_int<32, false> tilesize = (params.IC1)*((params.OX0-1)*(params.STRIDE) + (params.FX))*((params.OY0-1)*(params.STRIDE) + (params.FY));
         chanStruct<PackedInt<INPUT_PRECISION, IC0>,size> tmp;
-        if (!din.available(1)) {
-            printf("Input double buffer reader is the error");
-        }
+        int adr_ix0,adr_iy0, config_IX0,config_IY0,adr;
+       
         for(int k = 0;k < params.OY1;k++) {
             for(int m = 0;m < params.OX1;m++){
-                for(int l = 0;l < params.OC1;l++){
+                if (!din.available(1)) {
+                    printf("Input double buffer reader is the error");
+                    }
                 tmp = din.read();
+                for(int l = 0;l < params.OC1;l++){
+  
                     for (int ic1 = 0; ic1 < params.IC1; ic1++) {
+                        //tmp = din.read();
                         for (int fy = 0; fy < params.FY;fy++){
                             for (int fx = 0; fx < params.FX;fx++){
                                 for (int oy0 = 0; oy0 < params.OY0; oy0++) {
                                     for (int ox0 = 0; ox0 < params.OX0; ox0++) {
-                                        int adr_ix0 = params.STRIDE*ox0+fx;
-                                        int adr_iy0 = params.STRIDE*oy0+fy;
-                                        int config_IX0 = (params.OX0-1)*(params.STRIDE)+(params.FX);
-                                        int config_IY0 = (params.OY0-1)*(params.STRIDE)+(params.FY);
+                                        if((fx == 0 && fy == 0)||(l == 0)) {
+                                   
+                                        adr_ix0 = params.STRIDE*ox0+fx;
+                                        adr_iy0 = params.STRIDE*oy0+fy;
+                                        config_IX0 = (params.OX0-1)*(params.STRIDE)+(params.FX);
+                                        config_IY0 = (params.OY0-1)*(params.STRIDE)+(params.FY);
 
-                                        int adr = ic1*config_IX0*config_IY0+adr_iy0*config_IX0+adr_ix0;
+                                        adr = ic1*config_IX0*config_IY0+adr_iy0*config_IX0+adr_ix0;
                                         dout.write(tmp.data[adr]);
+                                        } else {
+                                           // adr_ix0 = params.STRIDE*ox0;
+                                            //adr_iy0 = params.STRIDE*oy0;
+                                        dout.write(tmp.data[adr]);
+                                        }
                                         //printf("Values are %d",adr);
                                     }
                                 }
@@ -100,7 +115,7 @@ public:
                 }
             }
         }
-    
+    printf("Size of reader dout is %d",dout.size());
                     
         
         

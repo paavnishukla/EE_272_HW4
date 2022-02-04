@@ -28,12 +28,12 @@ public:
                         //tmp.data[j] = din.read() ;
                         PackedInt<WEIGHT_PRECISION,OC0> entry;
                         for(int i = 0;i < OC0/4; i++){
-                            for(int k = 0;k < 4;k++){
+                            for(int n = 0; n < 4;n++){
                             //printf("Hello");
                                 if (!din.available(1)) {
                                         printf("Weight double buffer writer is the error");
                                     }
-                            entry.value[i*IC0/4 + k] =  din.read().value[k] ;
+                            entry.value[i*IC0/4 + n] =  din.read().value[n] ;
                         }
                     }
 

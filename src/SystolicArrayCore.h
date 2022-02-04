@@ -69,7 +69,7 @@ public:
             //for (int i = 0; i < 2*ARRAY_DIMENSION - 1 ; i++) {
             int rampUpTime = ARRAY_DIMENSION;
             int flushTime = ARRAY_DIMENSION-1;
-            int numPixels = (int)(params.OX0*params.OY0) ;//not right...output tile size
+            int numPixels = (int)(params.OX0*params.OY0) ;
             WDTYPE weightsArray[ARRAY_DIMENSION][ARRAY_DIMENSION];            
             for (int h = 0; h < rampUpTime+numPixels+flushTime; h++) {
             // Your code ends here 
@@ -103,9 +103,10 @@ public:
                 // Read inputs from the channel and store in the variable in_col
                 // Note: you don't read in any inputs during the flush time
                 // Your code starts here
-                if(h < rampUpTime + numPixels){
+                if(h < (numPixels)){
                         if (!input.available(1)) {
-                            printf("Input read in systolic array is the error");
+                            printf("Input read in systolic array is the error,corresponding h is %d",h);
+                            
                         }
                 in_col = input.read();
                 }

@@ -22,6 +22,9 @@ public:
 
                 // #pragma hls_pipeline_init_interval 1
                 for(int i = 0; i < tile_size; i++){
+                    if (!inputChannel.available(1)) {
+                    printf("Input channel in serializer is the error");
+                    }
                     DTYPE input = inputChannel.read();
                     #pragma hls_unroll yes
                     for(int j = 0; j < OC0; j++){

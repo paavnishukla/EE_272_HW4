@@ -134,7 +134,9 @@ int run_layer(Params params){
             for (int i = 0; i < params.OX0; i++ ){
 
               for (int j = 0; j < OC0; j++) {
-                
+                    if (!output_stream.available(1)) {
+                    printf("Output stream in convtb.cpp is the error");
+                    }
                ODTYPE out_value = output_stream.read();
 
                 if ((long long)output_ref[ro*params.OY0+p][co*params.OX0+i][koo*OC0+j] != (long long)output_ref_tiled[ro*params.OY0+p][co*params.OX0+i][koo*OC0+j]) {
